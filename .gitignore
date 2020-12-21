@@ -152,4 +152,4 @@ dmypy.json
 .prof
 
 # Django stuff:
-/migrations
+migrations
