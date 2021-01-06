@@ -59,8 +59,41 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['name']
 
 
-def __str__(self):
-    """
-    String representation of user model
-    """
-    return self.email
+    def __str__(self):
+        """
+        String representation of user model
+        """
+        return self.email
+
+
+class Division(models.Model):
+    name = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.name
+
+
+class FootballClub(models.Model):
+    division_name = models.ForeignKey(Division, related_name="division_name", on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.name
+
+
+class FootballMatch(models.Model):
+    class Meta:
+        verbose_name_plural = "football matches"
+
+    home_team = models.ForeignKey(FootballClub,
+                                  related_name='home_matches',
+                                  on_delete=models.CASCADE)
+    away_team = models.ForeignKey(FootballClub,
+                        related_name='away_matches',
+                        on_delete=models.CASCADE)
+
+    def clean(self, *args, **kwargs):
+        from django.core.exceptions import ValidationError
+        if self.home_team == self.away_team:
+            raise ValidationError(_("Same Team can not play against eatch other"))
+        super().clean(*args, **kwargs)
