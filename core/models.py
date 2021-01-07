@@ -3,6 +3,8 @@ from django.contrib.auth.models import (AbstractBaseUser,
                                         PermissionsMixin)
 from django.db import models
 from django.utils import timezone
+from django_countries.fields import CountryField
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -66,32 +68,59 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
-class Division(models.Model):
+class League(models.Model):
     name = models.CharField(max_length=100)
-    
+    division = models.CharField(max_length=100)
+    country = CountryField()
     def __str__(self):
         return self.name
 
 
-class FootballClub(models.Model):
-    division_name = models.ForeignKey(Division, related_name="division_name", on_delete=models.CASCADE)
+class Club(models.Model):
+    division_name = models.ForeignKey(League, related_name="division_name", on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    
+
     def __str__(self):
         return self.name
 
 
-class FootballMatch(models.Model):
+class Footballer(models.Model):
+    POSTION_CHOICES = [
+        ('GK', 'Goalkeeper'),
+        ('CB', 'Centre Back'),
+        ('LB', 'Left Back'),
+        ('RB', 'Right Back'),
+        ('CM', 'Centre Midfielder'),
+        ('LW', 'Left Winger'),
+        ('RW', 'Right Winger'),
+        ('ST', 'Striker'),
+    ]
+    name = models.CharField(max_length=100)
+    club = models.ForeignKey('Club', on_delete=models.DO_NOTHING)
+    number = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
+    age = models.IntegerField()
+    position = models.CharField(max_length=2,
+        choices=POSTION_CHOICES)
+    nationality = CountryField(max_length=100)
+
+
+    def __str__(self):
+        return f"{self.name} - {self.position}"
+
+class Match(models.Model):
+    
     class Meta:
         verbose_name_plural = "football matches"
 
-    home_team = models.ForeignKey(FootballClub,
+    home_team = models.ForeignKey(Club,
                                   related_name='home_matches',
                                   on_delete=models.CASCADE)
-    away_team = models.ForeignKey(FootballClub,
+    away_team = models.ForeignKey(Club,
                         related_name='away_matches',
-                        on_delete=models.CASCADE)
-
+                        on_delete=models.CASCADE) 
+    home_team_players = models.ManyToManyField('Footballer', related_name='home_team_players')
+    away_team_players = models.ManyToManyField('Footballer', related_name='away_team_players')
+    date = models.DateField()
     def clean(self, *args, **kwargs):
         from django.core.exceptions import ValidationError
         if self.home_team == self.away_team:

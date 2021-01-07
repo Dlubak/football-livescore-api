@@ -33,10 +33,10 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     # Third party applications
     'rest_framework',
+    'django_countries',
     # My Applications
     'core.apps.CoreConfig',
     'user.apps.UserConfig',
-    'football.apps.FootballConfig',
     # Django Apps
     'django.contrib.admin',
     'django.contrib.auth',

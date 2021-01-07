@@ -34,6 +34,7 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(models.User, UserAdmin)
 admin.site.unregister(Group)
-admin.site.register(models.Division)
-admin.site.register(models.FootballClub)
-admin.site.register(models.FootballMatch)
+admin.site.register(models.League)
+admin.site.register(models.Club)
+admin.site.register(models.Match)
+admin.site.register(models.Footballer)
