@@ -1,4 +1,4 @@
-Football Match Statistics API
+Football Match Livescore API
 =====
 
 
