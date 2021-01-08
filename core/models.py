@@ -2,7 +2,6 @@ from django.contrib.auth.models import (AbstractBaseUser,
                                         BaseUserManager,
                                         PermissionsMixin)
 from django.db import models
-from django.utils import timezone
 from django_countries.fields import CountryField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import ugettext_lazy as _
@@ -15,7 +14,7 @@ class UserManager(BaseUserManager):
 
     def create_user(self, email, name, password=None):
         """
-        Creates and saves a User with given 
+        Creates and saves a User with given
         email, nickname, and password.
         """
         if not email:
@@ -60,7 +59,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name']
 
-
     def __str__(self):
         """
         String representation of user model
@@ -72,12 +70,14 @@ class League(models.Model):
     name = models.CharField(max_length=100)
     division = models.CharField(max_length=100)
     country = CountryField()
+
     def __str__(self):
         return self.name
 
 
 class Club(models.Model):
-    division_name = models.ForeignKey(League, related_name="division_name", on_delete=models.CASCADE)
+    division_name = models.ForeignKey(
+        League, related_name="division_name", on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -97,18 +97,19 @@ class Footballer(models.Model):
     ]
     name = models.CharField(max_length=100)
     club = models.ForeignKey('Club', on_delete=models.DO_NOTHING)
-    number = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
+    number = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)])
     age = models.IntegerField()
     position = models.CharField(max_length=2,
-        choices=POSTION_CHOICES)
+                                choices=POSTION_CHOICES)
     nationality = CountryField(max_length=100)
-
 
     def __str__(self):
         return f"{self.name} - {self.position}"
 
+
 class Match(models.Model):
-    
+
     class Meta:
         verbose_name_plural = "football matches"
 
@@ -116,13 +117,17 @@ class Match(models.Model):
                                   related_name='home_matches',
                                   on_delete=models.CASCADE)
     away_team = models.ForeignKey(Club,
-                        related_name='away_matches',
-                        on_delete=models.CASCADE) 
-    home_team_players = models.ManyToManyField('Footballer', related_name='home_team_players')
-    away_team_players = models.ManyToManyField('Footballer', related_name='away_team_players')
+                                  related_name='away_matches',
+                                  on_delete=models.CASCADE)
+    home_team_players = models.ManyToManyField(
+        'Footballer', related_name='home_team_players')
+    away_team_players = models.ManyToManyField(
+        'Footballer', related_name='away_team_players')
     date = models.DateField()
+
     def clean(self, *args, **kwargs):
         from django.core.exceptions import ValidationError
         if self.home_team == self.away_team:
-            raise ValidationError(_("Same Team can not play against eatch other"))
+            raise ValidationError(
+                _("Same Team can not play against eatch other"))
         super().clean(*args, **kwargs)
