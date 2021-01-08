@@ -119,11 +119,13 @@ class Match(models.Model):
     away_team = models.ForeignKey(Club,
                                   related_name='away_matches',
                                   on_delete=models.CASCADE)
-    home_team_players = models.ManyToManyField(
-        'Footballer', related_name='home_team_players')
-    away_team_players = models.ManyToManyField(
-        'Footballer', related_name='away_team_players')
     date = models.DateField()
+    result = models.CharField(max_length=50)
+    # CHOICE_FIELD = [for home_team.]
+    home_team_players = models.ManyToManyField(
+        Footballer, blank=True, related_name="home_team_players")
+    # away_team_players = models.ManyToManyField(
+    #     related_name='away_team_players')
 
     def clean(self, *args, **kwargs):
         from django.core.exceptions import ValidationError
