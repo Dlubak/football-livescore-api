@@ -30,13 +30,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = [
-    # Third party applications
-    'rest_framework',
-    'django_countries',
-    # My Applications
-    'core.apps.CoreConfig',
-    'user.apps.UserConfig',
+DJANGO_APPS = [
     # Django Apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,6 +39,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+THIRD_PARTY_APPS = [
+    # Third party applications
+    'rest_framework',
+    'django_countries',
+]
+
+LOCAL_APPS = [
+    # My Applications
+    'core.apps.CoreConfig',
+    'user.apps.UserConfig',
+]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -113,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Europe/Warsaw'
-
+ 
 USE_I18N = True
 
 USE_L10N = True
@@ -126,4 +134,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# My custom user model
 AUTH_USER_MODEL = 'core.User'
