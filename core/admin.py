@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.utils.translation import gettext as _
 
 from core import models
-
+from core import football_models as football
 
 class UserAdmin(BaseUserAdmin):
     search_fields = ('email',)
@@ -34,7 +34,7 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(models.User, UserAdmin)
 admin.site.unregister(Group)
-admin.site.register(models.League)
-admin.site.register(models.Club)
-admin.site.register(models.Match)
-admin.site.register(models.Footballer)
+admin.site.register(football.League)
+admin.site.register(football.Club)
+admin.site.register(football.Match)
+admin.site.register(football.Footballer)
