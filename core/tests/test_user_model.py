@@ -1,6 +1,3 @@
-from unittest.mock import patch
-
-from core import models
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.core.exceptions import ValidationError
@@ -47,7 +44,7 @@ class UserModelTests(TestCase):
         )
 
         self.assertEqual(user.email, email.lower())
-    
+
     def test_check_user_privileges(self):
         """
         Test that checks that normal user has no superuser privileges
