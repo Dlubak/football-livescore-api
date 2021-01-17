@@ -22,7 +22,7 @@ class PublicUserApiTests(TestCase):
             'password': 'Testpassword123',
             'name': "Test User"
         }
-        response = self.client.post(reverse('user:list_create'), payload)
+        response = self.client.post(reverse('user:create'), payload)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         user = get_user_model().objects.get(**response.data)
         self.assertTrue(user.check_password(payload['password']))
@@ -38,7 +38,7 @@ class PublicUserApiTests(TestCase):
             'name': 'Test'
         }
         get_user_model().objects.create_user(**payload)
-        response = self.client.post(reverse('user:list_create'), payload)
+        response = self.client.post(reverse('user:create'), payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_expect_fail_password_to_short(self):
@@ -50,7 +50,7 @@ class PublicUserApiTests(TestCase):
             'password': 'tp',
             'name': 'Test'
         }
-        response = self.client.post(reverse('user:list_create'), payload)
+        response = self.client.post(reverse('user:create'), payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # Check that user was not created
         user = get_user_model().objects.filter(
@@ -69,9 +69,63 @@ class PublicUserApiTests(TestCase):
         }
         user = get_user_model().objects.create_user(**payload)
         serializer = UserSerializer(user)
-        response = self.client.get(reverse('user:list_create'))
+        response = self.client.get(reverse('user:list'))
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertIn(serializer.data, response.data)
+
+    def test_expect_success_token_is_created_for_user(self):
+        """
+        Test that token is created for the user
+        """
+        payload = {
+            'email': 'test_user@dev.com',
+            'password': 'Testpass123',
+            'name': 'Test'
+        }
+        user = get_user_model().objects.create_user(**payload)
+        response = self.client.post(reverse('user:token'), payload)
+        self.assertIn('token', response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_expect_fail_token_invalid_credentials(self):
+        """
+        Test that authentication token is not created if invalid credentials are given
+        """
+        payload = {
+            'email': 'test_user@dev.com',
+            'password': 'Testpass123',
+            'name': 'Test'
+        }
+        user = get_user_model().objects.create_user(**payload)
+        payload['password'] = 'fail'
+        response = self.client.post(reverse('user:token'), payload)
+        self.assertNotIn('token', response.data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_expect_fail_token_nonexistent_user(self):
+        """
+        Test that token is not created if user does not exist
+        """
+        payload = {
+            'email': 'test_user@dev.com',
+            'password': 'Testpass123',
+            'name': 'Test'
+        }
+        response = self.client.post(reverse('user:token'), payload)
+        self.assertNotIn('token', response.data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_expect_fail_missing_field(self):
+        """
+        Test that email and password are required for token to be created
+        """
+        payload = {
+            'email': 'test',
+            'password': ''
+        }
+        response = self.client.post(reverse('user:token'), payload)
+        self.assertNotIn('token', response.data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class PrivateUserApiTests(TestCase):
@@ -95,6 +149,7 @@ class PrivateUserApiTests(TestCase):
         response = self.client.get(self.manage_url)
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {
+            'id': self.user.id,
             'email': self.user.email,
             'name': self.user.name
         })

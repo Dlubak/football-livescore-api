@@ -20,6 +20,8 @@ from user import views
 # Additionally, we include login URLs for the browsable API.
 app_name = 'user'
 urlpatterns = [
-    path('users/', views.ListCreateUserView.as_view(), name="list_create"),
-    path('users/<int:pk>', views.ManageUserView.as_view(), name="manage")
+    path(r'users/', views.ListUserView.as_view(), name="list"),
+    path(r'users/create', views.CreateUserView.as_view(), name="create"),
+    path(r'users/<int:pk>', views.ManageUserView.as_view(), name="manage"),
+    path(r'token/', views.CreateAuthToken.as_view(), name="token"),
 ]
