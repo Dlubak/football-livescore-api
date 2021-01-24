@@ -22,6 +22,7 @@ class ListUserView(generics.ListAPIView):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
 
+
 class ManageUserView(generics.RetrieveUpdateDestroyAPIView):
     """
     Manage the authenticated user
@@ -30,7 +31,7 @@ class ManageUserView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwnerOrAdmin, permissions.IsAuthenticated]
     authentication_classes = [authentication.TokenAuthentication]
     queryset = get_user_model().objects.all()
-    
+
     # def get_object(self):
     #     """
     #     Retrieve and return authentication user

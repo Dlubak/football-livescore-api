@@ -20,5 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include('user.urls')),
-    # path('api/football', include('football.urls')),
+    path('api/football/', include('football.urls')),
 ]

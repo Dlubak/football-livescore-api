@@ -10,10 +10,12 @@ class UserSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ('id', 'email', 'password', 'name',)
 
-        # These fields are displayed but not editable and have to be a part of 'fields' tuple
+        # These fields are displayed but not editable
+        # and have to be a part of 'fields' tuple
         read_only_fields = ('id',)
-        
-        # These fields are only editable (not displayed) and have to be a part of 'fields' tuple
+
+        # These fields are only editable (not displayed)
+        # and have to be a part of 'fields' tuple
         extra_kwargs = {
             "password": {"write_only": True, 'min_length': 4}
         }
