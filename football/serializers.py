@@ -4,7 +4,6 @@ from django_countries.serializer_fields import CountryField
 
 
 class LeagueSerializer(serializers.ModelSerializer):
-    # country = serializers.StringRelatedField()
     country = CountryField(country_dict=True)
     """
     Serializer for League Objects

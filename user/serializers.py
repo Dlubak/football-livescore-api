@@ -5,14 +5,15 @@ from rest_framework import serializers
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for user objects"""
+    url = serializers.HyperlinkedIdentityField(view_name="user:manage")
 
     class Meta:
         model = get_user_model()
-        fields = ('id', 'email', 'password', 'name',)
+        fields = ('url', 'email', 'password', 'name',)
 
         # These fields are displayed but not editable
         # and have to be a part of 'fields' tuple
-        read_only_fields = ('id',)
+        # read_only_fields = 
 
         # These fields are only editable (not displayed)
         # and have to be a part of 'fields' tuple
